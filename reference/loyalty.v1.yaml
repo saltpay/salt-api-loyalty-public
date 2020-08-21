@@ -57,8 +57,20 @@ paths:
               $ref: '#/components/schemas/LoyaltyCardToken'
       tags:
         - loyalty provider
+  '/loyalty/{loyaltyProgramGuid}/card_tokens/{cardToken}':
+    parameters:
+      - schema:
+          type: string
+        name: loyaltyProgramGuid
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: cardToken
+        in: path
+        required: true
     patch:
-      summary: Update Enrolled Loyalty Card Token
+      summary: ''
       operationId: updateEnrolledCardToken
       responses:
         '200':
@@ -71,16 +83,16 @@ paths:
                 $ref: '#/components/schemas/ApiResponse'
         '404':
           description: Not Found
-      description: 'Update the enrolled card token record. The cardToken is required and is used to identify the record. If the cardToken exists, the record will be updated with the new customerId. If the cardToken does not exist, the system will respond with 404.'
       tags:
         - loyalty provider
+      description: 'Update the enrolled card token record. The cardToken is required and is used to identify the record. If the cardToken exists, the record will be updated with the new customerId. If the cardToken does not exist, the system will respond with 404.'
       security:
         - Authorization: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoyaltyCardToken'
+              $ref: '#/components/schemas/LoyaltyCardTokenProperties'
 components:
   schemas:
     ApiResponse:
@@ -100,6 +112,14 @@ components:
           type: string
         customerId:
           type: string
+      description: Extends the LoyaltyCardTokenProperties to include the cardToken for a complete record.
+    LoyaltyCardTokenProperties:
+      title: LoyaltyCardTokenProperties
+      type: object
+      properties:
+        customerId:
+          type: string
+      description: "Properties that can be updated for a given cardToken that's part of a loyalty program. "
   securitySchemes:
     Authorization:
       type: http
