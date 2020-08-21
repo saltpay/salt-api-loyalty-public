@@ -1,0 +1,116 @@
+openapi: 3.0.0
+info:
+  title: terminals
+  version: '1.0'
+  description: A backend service to enable a cloud orchestrated Terminal solution for POS systems
+  contact:
+    name: Salt Group
+servers:
+  - url: 'http://localhost:3100'
+paths:
+  '/loyalty/{loyaltyProgramGuid}/card_tokens':
+    parameters:
+      - schema:
+          type: string
+        name: loyaltyProgramGuid
+        in: path
+        required: true
+    post:
+      summary: Enroll Loyalty Card Token
+      operationId: enrollCardToken
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: 'Bad request, such as when the card token already exists, but the customerId is different.'
+      description: "Enroll a card token with a loyalty program. This call will be indempotent, such that the same call again (i.e. the same combination of parameter values) will still return success if the entity already exists. The cardToken is required for this call, therefore if the cardToken's record already exists and the customerId does not match then the call will fail."
+      security:
+        - Authorization: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoyaltyCardToken'
+      tags:
+        - loyalty provider
+    delete:
+      summary: Unenroll Loyalty Card Token
+      operationId: unenrollCardToken
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: 'Bad request, such as when no body parameters are provided.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '404':
+          description: No records found for the provided parameters
+      description: 'Unenroll one or more card tokens from the loyalty program. Either cardToken or customerId must be provided, or both. If only the cardToken is provided, then any match will be deleted. If only the customerId is provided, then all card tokens linked to that customerId will be deleted. If both the cardToken and customerId are provided, then only the record that matches both the cartToken and customerId will be deleted, if found. In all cases, if no records are found, a 404 will be returned. '
+      security:
+        - Authorization: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoyaltyCardToken'
+      tags:
+        - loyalty provider
+    patch:
+      summary: Update Enrolled Loyalty Card Token
+      operationId: updateEnrolledCardToken
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '404':
+          description: Not Found
+      description: 'Update the enrolled card token record. The cardToken is required and is used to identify the record. If the cardToken exists, the record will be updated with the new customerId. If the cardToken does not exist, the system will respond with 404.'
+      tags:
+        - loyalty provider
+      security:
+        - Authorization: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoyaltyCardToken'
+components:
+  schemas:
+    ApiResponse:
+      title: ApiResponse
+      type: object
+      description: 'Base API response object used for all API responses. This can include cases when there are server errors, as the responseCode allows for finer grained error reporting than the HTTP status alone.'
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+    LoyaltyCardToken:
+      title: LoyaltyCardToken
+      type: object
+      properties:
+        cardToken:
+          type: string
+        customerId:
+          type: string
+  securitySchemes:
+    Authorization:
+      type: http
+      scheme: bearer
+      description: ''
+tags:
+  - name: admin
+    description: Administer the Loyalty functionality of the service
+  - name: loyalty provider
+    description: Methods available to Loyalty Providers
+  - name: terminal
+    description: Methods available to terminals
+  - name: model
+    description: Data models used by the API
