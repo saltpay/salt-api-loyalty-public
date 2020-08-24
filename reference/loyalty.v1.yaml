@@ -8,7 +8,7 @@ info:
 servers:
   - url: 'http://localhost:3100'
 paths:
-  '/loyalty/{loyaltyProgramGuid}/card_tokens':
+  '/loyalty/programs/{loyaltyProgramGuid}/card_tokens':
     parameters:
       - schema:
           type: string
@@ -16,14 +16,14 @@ paths:
         in: path
         required: true
     post:
-      summary: Enroll Loyalty Card Token
-      operationId: enrollCardToken
+      summary: Enrol Loyalty Card Token
+      operationId: enrolCardToken
       responses:
         '201':
           description: Created
         '400':
           description: 'Bad request, such as when the card token already exists, but the customerId is different.'
-      description: "Enroll a card token with a loyalty program. This call will be indempotent, such that the same call again (i.e. the same combination of parameter values) will still return success if the entity already exists. The cardToken is required for this call, therefore if the cardToken's record already exists and the customerId does not match then the call will fail."
+      description: "Enrol a card token with a loyalty program. This call will be indempotent, such that the same call again (i.e. the same combination of parameter values) will still return success if the entity already exists. The cardToken is required for this call, therefore if the cardToken's record already exists and the customerId does not match then the call will fail."
       security:
         - Authorization: []
       requestBody:
@@ -34,8 +34,8 @@ paths:
       tags:
         - loyalty provider
     delete:
-      summary: Unenroll Loyalty Card Token
-      operationId: unenrollCardToken
+      summary: Unenrol Loyalty Card Token
+      operationId: unenrolCardToken
       responses:
         '200':
           description: OK
@@ -47,7 +47,7 @@ paths:
                 $ref: '#/components/schemas/ApiResponse'
         '404':
           description: No records found for the provided parameters
-      description: 'Unenroll one or more card tokens from the loyalty program. Either cardToken or customerId must be provided, or both. If only the cardToken is provided, then any match will be deleted. If only the customerId is provided, then all card tokens linked to that customerId will be deleted. If both the cardToken and customerId are provided, then only the record that matches both the cartToken and customerId will be deleted, if found. In all cases, if no records are found, a 404 will be returned. '
+      description: 'Unenrol one or more card tokens from the loyalty program. Either cardToken or customerId must be provided, or both. If only the cardToken is provided, then any match will be deleted. If only the customerId is provided, then all card tokens linked to that customerId will be deleted. If both the cardToken and customerId are provided, then only the record that matches both the cartToken and customerId will be deleted, if found. In all cases, if no records are found, a 404 will be returned. '
       security:
         - Authorization: []
       requestBody:
@@ -57,7 +57,7 @@ paths:
               $ref: '#/components/schemas/LoyaltyCardToken'
       tags:
         - loyalty provider
-  '/loyalty/{loyaltyProgramGuid}/card_tokens/{cardToken}':
+  '/loyalty/programs/{loyaltyProgramGuid}/card_tokens/{cardToken}':
     parameters:
       - schema:
           type: string
@@ -70,7 +70,7 @@ paths:
         in: path
         required: true
     patch:
-      summary: ''
+      summary: Update Loyalty Card Token Enrolment
       operationId: updateEnrolledCardToken
       responses:
         '200':
